@@ -65,7 +65,6 @@ app.use(loadControllers(
 ));
 
 const specs = swaggerJSDoc(options);
-console.error({api_docs_password, api_docs_user})
 app.use('/api-docs', basicAuth({
     users: { [api_docs_user || '']: api_docs_password || ''},
     challenge: true,
