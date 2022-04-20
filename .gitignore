@@ -1,4 +1,8 @@
 node_modules
-config
+#config
 build
 package-lock.json
+development.env
+staging.env
+production.env
+test-dev.json
