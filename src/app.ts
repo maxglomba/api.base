@@ -13,6 +13,20 @@ import { loadControllers } from 'awilix-express';
 import loadContainer from './container';
 import cors from 'cors';
 import jwt from 'express-jwt';
+import basicAuth from 'express-basic-auth';
+import swaggerUI from 'swagger-ui-express';
+import swaggerJSDoc from 'swagger-jsdoc';
+import { options } from './swaggerOptions';
+import allowedRoutes from './routes/allowed.routes';
+
+const processVars:any = process.env;
+const { jwt_secret_key, api_docs_user, api_docs_password}:{
+    jwt_secret_key: string, 
+    api_docs_user: string, 
+    api_docs_password: string
+} = processVars;
+
+
 
 const app: express.Application = express();
 
@@ -26,18 +40,36 @@ loadContainer(app);
 app.use(cors());
 
 //JWT
-if(process.env.jwt_secret_key){
-    app.use(jwt({
-        secret: process.env.jwt_secret_key,
-        algorithms: ['H256']
-    }));
+if (jwt_secret_key) {
+
+    app.use('/api/',
+        jwt({
+            secret: jwt_secret_key,
+            algorithms: ['H256']
+        }).unless({ path: allowedRoutes })
+    );
 }
+app.use(function (err: Error, req: express.Request, res: express.Response, next: express.NextFunction): void {
+    if (err.name === 'UnauthorizedError') {
+        res.status(401).json({ error: 'INVALID_TOKEN', message: 'Invalid token provided' });
+    } else {
+        next(err);
+    }
+});
 
 
 //Controllers
 app.use(loadControllers(
     'controllers/*.ts',
-    { cwd: __dirname}
+    { cwd: __dirname }
 ));
+
+const specs = swaggerJSDoc(options);
+console.error({api_docs_password, api_docs_user})
+app.use('/api-docs', basicAuth({
+    users: { [api_docs_user || '']: api_docs_password || ''},
+    challenge: true,
+}), swaggerUI.serve, swaggerUI.setup(specs));
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(specs));
 
 export { app };

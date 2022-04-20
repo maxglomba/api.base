@@ -2,12 +2,12 @@ import assert from 'assert';
 import { MovementService } from './movement.service';
 
 //set environment vars
-import Environment from '../common/tests/env.test';
+import Environment from '../../common/tests/env.test';
 const environment = new Environment();
 environment.set();
 
-import { MovementMOCKRepository } from './repositories/impl/mock/movement.repository';
-import { BalanceMOCKRepository } from './repositories/impl/mock/balance.repository';
+import { MovementMOCKRepository } from '../services/repositories/impl/mock/movement.repository';
+import { BalanceMOCKRepository } from '../../services/repositories/impl/mock/balance.repository';
 import { MovementCreateDto } from '../dtos/movement.dto';
 
 const BD = 'MOCK';
