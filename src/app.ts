@@ -12,13 +12,15 @@ import express = require('express');
 import { loadControllers } from 'awilix-express';
 import loadContainer from './container';
 import cors from 'cors';
-import jwt from 'express-jwt';
 import morgan from 'morgan';
+import jwt from 'express-jwt';
+import allowedRoutes from './routes/allowed.routes';
 import basicAuth from 'express-basic-auth';
 import swaggerUI from 'swagger-ui-express';
 import swaggerJSDoc from 'swagger-jsdoc';
 import { options } from './swaggerOptions';
-import allowedRoutes from './routes/allowed.routes';
+options.definition.servers[0].url += ':' + (process.env.PORT || 3000);
+
 
 const processVars:any = process.env;
 const { jwt_secret_key, api_docs_user, api_docs_password}:{
@@ -47,7 +49,6 @@ app.use(cors());
 
 //JWT
 if (jwt_secret_key) {
-    console.error({jwt_secret_key});
     app.use('/api/',
         jwt({
             secret: jwt_secret_key,
