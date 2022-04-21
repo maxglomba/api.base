@@ -85,7 +85,7 @@ import { BaseController } from '../common/controllers/base.controller';
  *         
  *         
  */
-@route('api/balances')
+@route('/api/balances')
 export class BalanceController extends BaseController{
     constructor(
         private readonly balanceService: BalanceService

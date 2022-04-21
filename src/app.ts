@@ -13,6 +13,7 @@ import { loadControllers } from 'awilix-express';
 import loadContainer from './container';
 import cors from 'cors';
 import jwt from 'express-jwt';
+import morgan from 'morgan';
 import basicAuth from 'express-basic-auth';
 import swaggerUI from 'swagger-ui-express';
 import swaggerJSDoc from 'swagger-jsdoc';
@@ -33,6 +34,11 @@ const app: express.Application = express();
 //JSON Support
 app.use(express.json());
 
+//morgan to development env
+if(process.env.APP_ENV === 'development'){
+    app.use(morgan('dev'));
+}
+
 //Container
 loadContainer(app);
 
@@ -41,11 +47,11 @@ app.use(cors());
 
 //JWT
 if (jwt_secret_key) {
-
+    console.error({jwt_secret_key});
     app.use('/api/',
         jwt({
             secret: jwt_secret_key,
-            algorithms: ['H256']
+            algorithms: ['HS256']
         }).unless({ path: allowedRoutes })
     );
 }
@@ -60,7 +66,7 @@ app.use(function (err: Error, req: express.Request, res: express.Response, next:
 
 //Controllers
 app.use(loadControllers(
-    'controllers/*.ts',
+    'controllers/*.js',
     { cwd: __dirname }
 ));
 
